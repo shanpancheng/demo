@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div>
+    <div>
+      未添加防抖：多次连续触发，重新渲染页面<br>
+      <input id="input1" type="text" value="">
+      <span id="uppercase1"></span>
+    </div>
+    <hr/>
+    <div>
+      防抖：多次触发事件后，事件处理函数只执行一次<br>
+      <input id="input" type="text" value="">
+      <span id="uppercase"></span>
+    </div>
+    <hr/>
+  </div>
+  <script>
+    /* 
+      防抖节流可以减少事件触发的频率，可以优化性能，提高用户体验
+      debounce : 防抖，多次触发事件后，事件处理函数只执行一次(延时执行是最后一个事件, 直接执行是第一个事件)
+      throttle： 节流
+     */
+    const input1 = document.querySelector('#input1');
+    // 未添加了防抖
+    input1.onkeydown = function(e){
+      const value = e.target.value
+      const uppercase1 = document.querySelector('#uppercase1');
+      uppercase1.textContent = value;
+    }
+
+    const input = document.querySelector('#input');
+    // 添加了防抖
+    input.onkeydown = debounce(keydownFn, 3000, callback(3));
+
+    function callback(time) {
+      let timer;
+      let backTime = time;
+      return function() {
+        if(timer) {
+          clearInterval(timer)
+          timer = null;
+        }
+        timer = setInterval(() => {
+          time--;
+          if(time > 0) {
+            console.log(time, '秒后执行');
+          } else {
+            clearInterval(timer);
+            timer = null;
+            time = backTime;
+          }
+          
+        }, 1000);
+      }
+    }
+
+    function keydownFn(e) {
+      const value = e.target.value
+      const uppercase = document.querySelector('#uppercase');
+      uppercase.textContent = value.toLocaleUpperCase();
+      console.log('value', value)
+    }
+
+    // 延时执行
+    function debounce(fn, delay = 500, callback) {
+      let timer;
+      return function() {
+        if(timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        callback()
+        timer = setTimeout(() => {
+          const arg = arguments
+          fn.apply(this, arg);
+        }, delay)
+      }
+    }
+
+
+  </script>
+</body>
+</html>
