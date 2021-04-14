@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div>
+  </div>
+  <script>
+    /**
+     * 迭代器： 无需暴露数据结构内部表示
+     * 从目标源一次逐个抽取的方式提取数据 有序且连续
+     * 可迭代的，Array Map Set String TypeArray arguments NodeList
+     */ 
+    let arr = [1, 2, 3, 4];
+    const iterator = arr[Symbol.iterator]()
+    // console.log(iterator.next());
+
+    function myIterator(arr) {
+      let index = 0;
+      return {
+        next: function () {
+          if (index < arr.length) {
+            return {
+              value: arr[index++],
+              done: false,
+            }
+          }
+          return {
+            value: undefined,
+            done: true,
+          }
+        }
+      }
+    }
+    const myIter = myIterator(arr);
+    // console.log(myIter.next());
+    // console.log(myIter.next());
+    // console.log(myIter.next());
+    // console.log(myIter.next());
+    // console.log(myIter.next());
+
+    // 对象不可迭代, 自定义迭代
+    var obj = {
+      // a: 1,
+      // b: 2,
+      // c: 3,
+      [Symbol.iterator]: function() {
+        const map = new Map();
+        
+        map.set('a', 1)
+        map.set('b', 2)
+        map.set('c', 3)
+        console.log(map.keys())
+        console.log(map.values())
+        console.log(map.entries())
+        let index = 0;
+        return {
+          next: function() {
+            var mapEntries = [...map.entries()]
+            if (index < mapEntries.length) {
+              return {
+                value: mapEntries[index++],
+                done: false,
+              }
+            }
+            return {
+              value: undefined,
+              done: true
+            }
+          }
+        }
+      }
+    }
+
+    for (var k of obj) {
+      console.log(k);
+    }
+
+    // 斐波那契数列
+    let fibonacci = {
+      [Symbol.iterator]() {
+        let pre = 0,
+          cur = 1
+        return {
+          next() {
+            [pre, cur] = [cur, pre + cur]
+            return {
+              done: false,
+              value: cur
+            }
+          }
+        }
+      }
+    }
+
+    for (let n of fibonacci) {
+      if (n > 1000)
+        break
+      // console.log(n)
+    }
+
+
+    console.log(' ---- 生成器 ----')
+    /**
+     * 生成器：用来生成迭代器
+     */
+    
+    function * Genrator() {
+      yield 1;
+      yield 2;
+      yield 3;
+      yield 4;
+    }
+
+    let iterator2 = Genrator();
+    // console.log(iterator2.next());
+    // console.log(iterator2.next());
+    // console.log(iterator2.next());
+    // console.log(iterator2.next());
+    // console.log(iterator2.next());
+    for(var i of iterator2) {
+      // console.log(i);
+    }
+
+    // 生成器传值，呈z字形传值
+    function * Genrator2 () {
+      let value1 = yield 1;
+      console.log('value1:', value1);
+      let value2 = yield 2;
+      console.log('value2:', value2);
+      let value3 = yield 3;
+      console.log('value3:', value3);
+      let value4 = yield 4;
+      console.log('value4:', value4);
+    }
+    // let iterator3 = Genrator2();
+    // console.log(iterator3.next('one'));
+    // console.log(iterator3.next('two'));
+    // console.log(iterator3.next('three'));
+    // console.log(iterator3.next('four'));
+    // console.log(iterator3.next('five'));
+
+    // 使用生成器生成迭代器让对象可迭代
+    function createIterator(obj) {
+      const map = new Map();
+      for(var k in obj) {
+        map.set(k, obj[k]);
+      }
+      const mapEntries = [...map.entries()];
+      let index = 0;
+      function *iterator () {
+        while(index < mapEntries.length) {
+          yield mapEntries[index++];
+        }
+      }
+      return obj = {
+        ...obj,
+        [Symbol.iterator]: iterator
+      }
+    }
+    var obj2 = {
+      a: 'aa',
+      b: 'bb',
+      c: 'cc',
+    }
+    // 方式1： 调用对象中的迭代器
+    const iterator4 = createIterator(obj2)[Symbol.iterator]();
+    console.log(iterator4.next());
+    // console.log(iterator4.next());
+    // console.log(iterator4.next());
+    // console.log(iterator4.next());
+    // 方式2：直接迭代对象
+    var newObj = createIterator(obj2);
+    console.log(newObj)
+    for(var i of newObj) {
+      console.log(i);
+    }
+
+  </script>
+</body>
+
+</html>
