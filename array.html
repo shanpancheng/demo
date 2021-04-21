@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+
+  const Math2 = {
+    max: function(...args) {
+      console.log('args:', args)
+      return args.sort((a, b) => b - a)[0]
+    }
+  }
+  // console.log(Math.max(3,2,5));
+
+  var arr = [
+    [1, 3, 2, 6],
+    [11, 130, 1024, 696],
+    [21, 333, 2020, 666],
+    [31, 44, 23, 60],
+  ];
+
+  // console.log(Math.max(...arr[0]))
+
+  // item, index, arr
+  // var maxArr = arr.map((item, index, arr)  => {
+  //   // debugger
+  //   // Math2.max(item)
+  //   return Function.prototype.apply.bind(Math2.max, null)(item, index, arr);
+  // });
+  // var maxArr = arr.map(Function.prototype.apply.bind(Math2.max, null));
+  // console.log(maxArr)
+
+  // Math2.max([1,2,3,4], 0, arr)
+
+  function foo() {
+    console.log(a);
+    // console.log(b); 
+  }
+  function bar() {
+    var a = 3;
+    foo();
+  }
+  var a = 2;
+  bar();
+
+
+
+  </script>
+</body>
+</html>

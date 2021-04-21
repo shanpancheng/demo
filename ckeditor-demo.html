@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>CKEditor 5 – Classic editor</title>
+    <script src="https://cdn.ckeditor.com/ckeditor5/27.1.0/classic/ckeditor.js"></script>
+    <style>
+      a[target]::after {
+        content: "target=\"" attr(target) "\"";
+        font-size: 0.6em;
+        position: relative;
+        left: 0em;
+        top: -1em;
+        background: #00ffa6;
+        color: #000;
+        padding: 1px 3px;
+        border-radius: 10px;
+      }
+    </style>
+</head>
+<body>
+    <h1>Classic editor</h1>
+    <div id="editor">
+        <div class="aa">
+          <div class="aadd" id='yyy' onclick="haha">
+            <div>This is some sample content.</div>
+            <p class="aaaxxx" id="id">
+              1222
+            </p>
+            <span class="span">span</span>
+            <span>span</span>
+            <!-- <ul>
+              <li><a href="https://ckeditor.com" target="_blank" class="haha">CKEditor</a></li>
+              <li><a href="https://ckeditor.com/ckfinder/">CKFinder</a></li>
+              <li><a href="https://cksource.com" target="_parent">CKSource</a></li>
+              <li><a href="https://cksource.com/team/" target="_top">Team</a></li>
+            </ul> -->
+          </div>
+        </div>
+    </div>
+    <script>
+        ClassicEditor
+          .create( document.querySelector( '#editor' ), {
+            extraPlugins: [ ConvertDivAttributes  ],
+          })
+          .catch( error => {
+              console.error( error );
+          } );
+
+        function ConvertDivAttributes( editor ) {
+          console.log(editor);
+          const allowAttributes = ['class', 'style'];
+          // Allow <div> elements in the model.
+          editor.model.schema.register( 'div', {
+              isInline: false,
+              isObject: true,
+              allowWhere: '$block',
+              allowContentOf: '$root',
+          } );
+
+          editor.model.schema.register('span', {
+              isInline: false,
+              isObject: false,
+              allowWhere: '$text',
+              allowContentOf: '$block',
+              allowAttributes: allowAttributes
+          } );
+
+          // editor.model.schema.extend( '$text', { allowAttributes: ['class'] } );
+
+
+          // Allow <div> elements in the model to have all attributes.
+          // editor.model.schema.addAttributeCheck( (context, attributeName ) => {
+          //     if ( context.endsWith( 'div' ) ) {
+          //         return true;
+          //     }
+          // } );
+          // function createDowncastElement(modelElement, writer) {
+          //   const element = writer.createContainerElement("div");
+          //   const value = modelElement.getAttribute("class");
+          //   const innerText = writer.createText(value);
+          //   writer.insert(writer.createPositionAt(element, 0), innerText);
+
+          //   return element;
+          // }
+          function createUpcastElement(viewElement, writer, view) {
+            const attribute = {};
+            allowAttributes.forEach(item => {
+              attribute[item] = viewElement.getAttribute(item);
+            })
+            return writer.createElement( view, attribute);
+          }
+
+          // The view-to-model converter converting a view <div> with all its attributes to the model.
+          editor.conversion.for( 'upcast' ).elementToElement( {
+              view: 'div',
+              // model: ( viewElement, { writer: modelWriter } ) => {
+              //   console.log(modelWriter.createElement( 'div', {class: viewElement.getAttribute('class'), style: viewElement.getAttribute('style')} ));
+              //     return modelWriter.createElement( 'div', {class: viewElement.getAttribute('class'), style: viewElement.getAttribute('style')} );
+              // }
+              model: ( viewElement, { writer } ) => {
+                return createUpcastElement(viewElement, writer, 'div')
+              }
+          } );
+
+          // The model-to-view converter for the <div> element (attributes are converted separately).
+          editor.conversion.for( 'downcast' ).elementToElement( {
+              model: 'div',
+              view: 'div'
+          } );
+
+
+          editor.conversion.for( 'upcast' ).elementToElement( {
+            view: 'p',
+            // model: ( viewElement, { writer: modelWriter } ) => {
+            //   return modelWriter.createElement( 'paragraph', {class: viewElement.getAttribute('class'), style: viewElement.getAttribute('style')} );
+            // }
+            model: ( viewElement, { writer } ) => {
+                return createUpcastElement(viewElement, writer, 'paragraph')
+              }
+          } );
+
+          editor.conversion.for( 'downcast' ).elementToElement( {
+            model: 'paragraph',
+            view: 'p'
+          } );
+
+          editor.conversion.for( 'upcast' ).elementToElement( {
+            view: 'span',
+            model: ( viewElement, { writer: modelWriter } ) => {
+              console.log(viewElement.getAttribute('class'));
+              return modelWriter.createElement( 'span', {class: viewElement.getAttribute('class'), style: viewElement.getAttribute('style')} );
+            }
+          } );
+
+          editor.conversion.for( 'downcast' ).elementToElement( {
+            model: 'span',
+            view: 'span',
+          } );
+
+          // The model-to-view converter for <div> attributes.
+          // Note that a lower-level, event-based API is used here.
+          editor.conversion.for( 'downcast' ).add( dispatcher => {
+              dispatcher.on( 'attribute', ( evt, data, conversionApi ) => {
+                  // Convert <div> attributes only.
+                  console.log(data.item.name);
+                  if ( ['div', 'paragraph', 'span'].indexOf(data.item.name) < 0 ) {
+                      return;
+                  }
+
+                  const viewWriter = conversionApi.writer;
+                  const viewDiv = conversionApi.mapper.toViewElement( data.item );
+
+                  // In the model-to-view conversion we convert changes.
+                  // An attribute can be added or removed or changed.
+                  // The below code handles all 3 cases.
+                  console.log(data.attributeNewValue);
+                  if ( data.attributeNewValue ) {
+                      viewWriter.setAttribute( data.attributeKey, data.attributeNewValue, viewDiv );
+                  } else {
+                      viewWriter.removeAttribute( data.attributeKey, viewDiv );
+                  }
+              } );
+          } );
+        }
+
+        function AllowLinkTarget( editor ) {
+          // Allow the "linkTarget" attribute in the editor model.
+          editor.model.schema.extend( '$text', { allowAttributes: ['linkTarget'] } );
+
+          // Tell the editor that the model "linkTarget" attribute converts into <a target="..."></a>
+          editor.conversion.for( 'downcast' ).attributeToElement( {
+              model: 'linkTarget',
+              view: ( attributeValue, { writer } ) => {
+                // console.log('attributeValue', attributeValue);
+                  const linkElement = writer.createAttributeElement( 'a', { target: attributeValue }, { priority: 5 } );
+                  writer.setCustomProperty( 'link', true, linkElement );
+                  // console.log('linkElement', linkElement);
+                  return linkElement;
+              },
+              converterPriority: 'low'
+          } );
+
+          // Tell the editor that <a target="..."></a> converts into the "linkTarget" attribute in the model.
+          editor.conversion.for( 'upcast' ).attributeToAttribute( {
+              view: {
+                  name: 'a',
+                  key: 'target'
+              },
+              model: 'linkTarget',
+              converterPriority: 'low'
+          } );
+        }
+
+
+    </script>
+</body>
+</html>

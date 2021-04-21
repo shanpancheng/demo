@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    /* 
+      使用指针思想查找字符串中连续出现最多的字符
+      例如： aababbbbcccccccddd  输出 ccccccc
+     */
+    let str = 'aaaaaaaaababbbbcccccccddd';
+
+    function findMaxLenStr(str) {
+      // 1、指针i初始指向在字符串索引下标为0处
+      // 2、指针j初始在i下一位置，指针j往后移动，当i处的字符和j处的字符不同时，指针i追上指针j，记录这次连续字符出现的次数
+      let maxStr = '';
+      let i = 0,
+          j = 1;
+      while(i <= str.length - 1) {
+        if(str.charAt(i) !== str.charAt(j)) {
+          console.log(`${i}处的字符和${j}处的字符不相同， 重复了${j - i}次`);
+          i = j;
+        }
+        maxStr = j - i > maxStr.length ? str.slice(i, j) : maxStr;
+        j++;
+      }
+      return maxStr;
+    }
+
+    // console.log(findMaxLenStr(str));
+
+    /* 
+      递归输出斐波那契数列前n项的和，使用缓存机制 1,1,2,3,5,8,13,21,34,55
+     */
+
+    // 计算第N项的值
+    function fib(n, coach = {}) {
+      console.count('次数');
+      if(coach.hasOwnProperty(n)) {
+        return coach[n];
+      }
+      const v = (n === 1 || n === 2) ? 1 : fib(n - 1, coach) + fib(n - 2, coach);
+      coach[n] = v
+      return v;
+    }
+    // 求前n项和
+    function fibNTotal(n) {
+      let total = 0;
+      let coach = {}
+      for(i = 1; i <= n; i++) {
+        total += fib(i, coach);
+        console.log(coach);
+      }
+      return total;
+    }
+
+    // console.log(fibNTotal(10));
+
+
+    /* 
+      数组转换成对象
+      [1, 2, 3, [4, 5]]  转换为
+      {
+        children: [
+          { value: 1 },
+          { value: 2 },
+          { value: 3 },
+          {
+            children: [
+              { value: 4 },
+              { value: 5 },
+            ]
+          }
+        ]
+      }
+     */
+    let arr = [1, 2, [3, [4, 5], 6], 7, [8], 9];
+
+    // 方法1
+    function arrTransferObj(arr, obj) {
+      console.log(obj);
+      arr.forEach((item, index) => {
+        if(Object.prototype.toString.call(item) === '[object Array]') {
+          obj.children.push({});
+          arrTransferObj(item, obj.children[index])
+        } else {
+          obj = obj || {}
+          obj.children = obj.children || [];
+          obj.children.push({
+            value: item
+          })
+          
+        }
+      })
+      return obj;
+    }
+    
+    // console.log(JSON.stringify(arrTransferObj(arr), '\n', 2));
+
+    // 方法2
+    function arrTransferObj2(item) {
+      if(Array.isArray(item)) {
+        return {
+          children: item.map(_item => arrTransferObj2(_item))
+        }
+      } else {
+        return {
+          value: item
+        }
+      }
+    }
+
+    console.log(arrTransferObj2(arr));
+
+
+  </script>
+</body>
+</html>
