@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    // 输入：3[2[abc]2[d]]   输出：abcabcddabcabcddabcabcdd
+    /*
+      遍历每一个字符
+      如果这个字符是数字，就把数字压栈1，同时把空字符串压栈2
+      如果这个字符是字母，那么就把栈2栈顶改为这个字母
+      如果这个字符是],那么就把栈1弹栈，栈2弹栈，同时把栈2的栈顶的元素重复为刚刚出栈的次数，拼接到新栈2栈顶
+    */
+    function smartRepeat(str) {
+      let index = 0;
+      let stack1 = [];
+      let stack2 = [];
+      let rest = str;
+      while(index < str.length - 1) {
+        // 剩余部分
+        rest = str.substring(index);
+        if(/^\d+\[/.test(rest)) {
+          let times = Number(rest.match(/(^\d+)\[/)[1]);
+          stack1.push(times);
+          stack2.push('');
+          // 指针指向数字后面的[
+          index += times.toString().length + 1;
+        } else if(/^\w+\]/.test(rest)) {
+          let word = rest.match(/(^\w+)\]/)[1];
+          stack2[stack2.length - 1] = word;
+          index += word.length;
+        } else if(rest[0] === ']') {
+          let times = stack1.pop();
+          let word = stack2.pop();
+          stack2[stack2.length - 1] += word.repeat(times);
+          index++;
+        } else {
+          index++;
+        }
+        console.log(index, stack1, stack2);
+      }
+      return stack2[0].repeat(stack1[0])
+    }
+    const result = smartRepeat('3[2[abc]2[d]]');
+    console.log(result);
+  </script>
+</body>
+</html>
