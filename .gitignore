@@ -3,3 +3,8 @@ AST/package-lock.json
 
 virtualDom/node_modules
 virtualDom/package-lock.json
+
+mvvm/node_modules
+mustache/node_modules
+
+*/node_modules

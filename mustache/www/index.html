@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="container"></div>
+  <script src="/xuni/bundle.js"></script>
+  <script>
+    // const templateStr = '我买了一个{{thing}}, 好{{mood}}啊。'
+    const templateStr = `
+      <ul>
+        {{#arr}}
+          <li>
+            <div>{{name}}的基本信息：</div>
+            <p>姓名：{{name}}</p>
+            <p>年龄：{{age}}</p>
+            <p>性别：{{sex}}</p>
+          </li>
+        {{/arr}}
+      </ul>
+    `;
+    const data = {
+      thing: '电脑',
+      mood: '开心'
+    }
+    Mustache.render(templateStr, data);
+  </script>
+</body>
+</html>
