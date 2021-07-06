@@ -42,16 +42,23 @@
     const p1 = Promise.resolve(11222);
     const p2 = Promise.resolve(Promise.resolve('yyyyy'));
     const p3 = Promise.resolve(Promise.reject('xxxx'));
+    const p4 = Promise.reject('444xxxx');
 
-    p1.then(value => {
-      console.log(value);
+    // p1.then(value => {
+    //   console.log(value);
+    // });
+    // p2.then(value => {
+    //   console.log(value);
+    // });
+    // p3.catch(reason => {
+    //   console.log(reason);
+    // })
+    Promise.race([1, p4, p1, p2])
+    .then(result => {
+      console.log(result);
+    }, error => {
+      console.log('报错了', error);
     });
-    p2.then(value => {
-      console.log(value);
-    });
-    p3.catch(reason => {
-      console.log(reason);
-    })
   </script>
 </body>
 </html>

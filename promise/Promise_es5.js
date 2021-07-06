@@ -179,7 +179,24 @@
    * @param {*} value 
    */
   Promise.all = function(promises) {
-
+    const values = new Array(promises.length);
+    let resolvedCount = 0;
+    return new Promise((resolve, reject) => {
+      promises.forEach((p, index) => {
+        Promise.resolve(p).then(
+          value => {
+            resolvedCount++
+            values[index] = value;
+            if(resolvedCount === promises.length) {
+              resolve(values);
+            }
+          },
+          reason => {
+            reject(reason);
+          }
+        );
+      });
+    });
   }
 
   /**
@@ -187,7 +204,14 @@
    * @param {*} value 
    */
   Promise.race = function(promises) {
-
+    return new Promise((resolve, reject) => {
+      promises.forEach(p => {
+        Promise.resolve(p).then(
+          resolve,
+          reject,
+        );
+      })
+    })
   }
 
   window.Promise = Promise;
