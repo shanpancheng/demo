@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script src="./Promise_es5.js"></script>
+  <script>
+    // const p = new Promise((resolve, reject) => {
+    //   // setTimeout(() => {
+    //     resolve(1);
+    //     // reject(2)
+    //     console.log('执行器执行完之后');
+    //   // }, 100);
+
+    // });
+
+    // p.then(
+    //   value => {
+    //     console.log('onResolved1()', value);
+    //     // throw 33
+    //     return new Promise((resolve, reject) => reject(4555))
+    //   },
+    //   reason => {
+    //     console.log('onRejected1()', reason);
+    //   }
+    // ).then(
+    //   value => {
+    //     console.log('onResolved2()', value);
+    //   },
+    //   reason => {
+    //     console.log('onRejected2()', reason);
+    //     throw 8
+    //   }
+    // ).catch(reason => {
+    //   console.log('onRejected3()', reason);
+    // });
+    // console.log('--------------------');
+
+    const p1 = Promise.resolve(11222);
+    const p2 = Promise.resolve(Promise.resolve('yyyyy'));
+    const p3 = Promise.resolve(Promise.reject('xxxx'));
+
+    p1.then(value => {
+      console.log(value);
+    });
+    p2.then(value => {
+      console.log(value);
+    });
+    p3.catch(reason => {
+      console.log(reason);
+    })
+  </script>
+</body>
+</html>
